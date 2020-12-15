@@ -32,7 +32,8 @@ typedef struct Tclientes cliente;
 
 struct Tfuncionario
 {
-    int codigo,salario,telefone;
+    int codigo,salario;
+    tel telefone;
     char nome[30],cargo[30];
 };
 typedef struct Tfuncionario funcionario;
@@ -350,9 +351,13 @@ void inclui_funcionario(FILE *afuncionarios)
         printf("Digite o nome do funcionário...:");
         fflush(stdin);
         gets(f.nome);
-        printf("Digite o telefone do funcionário...:");
+        printf("Digite o telefone do cliente:\n");
+        printf("Digite o DDD................:\n");
         fflush(stdin);
-        scanf("%d",&f.telefone);
+        scanf("%d",&f.telefone.ddd);
+        printf("Digite o número.............:\n");
+        fflush(stdin);
+        scanf("%f",&f.telefone.numero);
         printf("Digite o cargo do funcionário...:");
         fflush(stdin);
         gets(f.cargo);
