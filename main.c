@@ -12,11 +12,19 @@ struct Ttelefone
 };
 typedef struct Ttelefone tel;
 
+struct Tendereco
+{
+    int numero;
+    char rua[20],complemento[15],bairro[20],cidade[20],uf[3],cep[10];
+};
+typedef struct Tendereco ender;
+
 struct Tclientes
 {
     int codigo;
     tel telefone;
-    char nome[30],endereco[100];
+    ender endereco;
+    char nome[30];
 };
 typedef struct Tclientes cliente;
 
@@ -298,9 +306,28 @@ void inclui_cliente(FILE *aclientes)
         printf("Digite o número.............:\n");
         fflush(stdin);
         scanf("%f",&c.telefone.numero);
-        printf("Digite o endereço do cliente:");
+        printf("Digite o endereço do cliente\n");
+        printf("Rua: ");
         fflush(stdin);
-        gets(c.endereco);
+        gets(c.endereco.rua);
+        printf("Número: ");
+        fflush(stdin);
+        scanf("%d",&c.endereco.numero);
+        printf("Complemento: ");
+        fflush(stdin);
+        gets(c.endereco.complemento);
+        printf("Bairro: ");
+        fflush(stdin);
+        gets(c.endereco.bairro);
+        printf("Cidade: ");
+        fflush(stdin);
+        gets(c.endereco.cidade);
+        printf("UF: ");
+        fflush(stdin);
+        gets(c.endereco.uf);
+        printf("CEP: ");
+        fflush(stdin);
+        gets(c.endereco.cep);
         fseek(aclientes,0,SEEK_END);
         fwrite(&c, sizeof(c),1,aclientes);
         fflush(aclientes);
@@ -576,7 +603,7 @@ void imprime_cliente(FILE *aclientes)
         printf("Código....:%d \n",c.codigo);
         printf("Nome.:%s \n",c.nome);
         printf("Telefone.....:(%d) %.0f\n",c.telefone.ddd,c.telefone.numero);
-        printf("Endereço.....:%s\n",c.endereco);
+        printf("Endereço.....:%s, %d, %s, %s, %s - %s - CEP: %s\n",c.endereco.rua,c.endereco.numero,c.endereco.complemento,c.endereco.bairro,c.endereco.cidade,c.endereco.uf,c.endereco.cep);
         fread(&c, sizeof(c),1, aclientes);
     }
 }
