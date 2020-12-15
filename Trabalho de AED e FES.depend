@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1608063260 source:c:\users\pedro\desktop\repositorios\locadoralocamais-puc\main.c
+	<stdio.h>
+	<stdlib.h>
+	<locale.h>
+	<string.h>
+
