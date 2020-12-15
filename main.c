@@ -171,6 +171,9 @@ int main()
         case 10:
             baixa_locacao(alocacao,aclientes,aveiculos);
             break;
+        case 11:
+            pesquisaClienteFuncionario(afuncionarios,aclientes);
+            break;
 
         }
         if (op!=9)
@@ -212,7 +215,7 @@ int localiza_cliente(FILE *aclientes,int codigo, char nome[30])
         return -1;
     }
 }
-int localiza_funcionario(FILE *afuncionarios,int codigo)
+int localiza_funcionario(FILE *afuncionarios,int codigo, char nome[30])
 {
     int posicao2=-1,achou=0;
     funcionario f;
@@ -221,7 +224,7 @@ int localiza_funcionario(FILE *afuncionarios,int codigo)
     while (!feof(afuncionarios) && !achou)
     {
         posicao2++;
-        if (f.codigo==codigo)
+        if (f.codigo==codigo || strcmpi(f.nome,nome)==0)
         {
             achou=1;
         }
@@ -342,7 +345,7 @@ void inclui_funcionario(FILE *afuncionarios)
     int posicao,codigo;
     printf("Digite o código do funcionário...:");
     scanf("%d",&codigo);
-    posicao=localiza_funcionario(afuncionarios,codigo);
+    posicao=localiza_funcionario(afuncionarios,codigo,"---");
     if (posicao==-1)
     {
         printf("Digite o nome do funcionário...:");
@@ -492,7 +495,6 @@ void inclui_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
             l.dataEnt.mes=0;
             fflush(stdin);
             l.dias=calcula_dias(l.dataRet.dia,l.dataRet.mes,l.dataRet.ano,l.dataDev.dia,l.dataDev.mes,l.dataDev.ano);
-            fflush(stdin);
             posicao=localiza_veiculo(aveiculos,-1,qtd);
             if (posicao!=-1){
                 fseek(aveiculos,sizeof(v)*posicao,SEEK_SET);
@@ -655,7 +657,7 @@ void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
     scanf("%d",&codigo);
     posicao1=localiza_locacao(alocacao,codigo);
 
-    if (posicao1==-1)
+    if (posicao1!=-1)
     {
 
         fseek(alocacao,sizeof(l)*(posicao1),SEEK_SET);
@@ -665,7 +667,7 @@ void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
         scanf("%d%d%d",&l.dataEnt.dia,&l.dataEnt.mes,&l.dataEnt.ano);
         dias1=calcula_dias(l.dataRet.dia,l.dataRet.mes,l.dataRet.ano,l.dataEnt.dia,l.dataEnt.mes,l.dataEnt.ano);
         posicao2=localiza_veiculo(aveiculos,l.cod_v,0);
-        if (posicao2==-1)
+        if (posicao2!=-1)
         {
             fseek(aveiculos,sizeof(v)*(posicao2),SEEK_SET);
             fread(&v, sizeof(v),1, aveiculos);
@@ -697,7 +699,7 @@ void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
 
             posicao3=localiza_cliente(aclientes,l.cod_c,"---");
 
-            if (posicao3==-1)
+            if (posicao3!=-1)
             {
                 fseek(aclientes,sizeof(c)*(posicao3),SEEK_SET);
                 fread(&c, sizeof(c),1, aclientes);
@@ -714,6 +716,59 @@ void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
     else
     {
         printf("!!!");
+    }
+
+
+}
+
+void pesquisaClienteFuncionario (FILE *afuncionarios,FILE *aclientes)
+{
+    cliente c;
+    funcionario f;
+    int x,posicao,codigo;
+    char nome[30];
+    printf("Digite 1 para imprimir dados de funcionários ou 2 para imprimir dados de clientes: ");
+    scanf("%d",&x);
+    printf("Digite o nome:");
+    fflush(stdin);
+    gets(nome);
+    if (x==1)
+    {
+        posicao=localiza_funcionario(afuncionarios,-1,nome);
+        if (posicao==-1)
+        {
+            printf("Não existe um funcionário com esse código. Impressão não realizada!\n");
+        }
+        else
+        {
+            fseek(afuncionarios,sizeof(f)*(posicao),SEEK_SET);
+            fread(&f, sizeof(f),1, afuncionarios);
+            printf("Código....:%d \n",f.codigo);
+            printf("Nome.:%s \n",f.nome);
+            printf("Telefone.....:(%d) %.0f\n",f.telefone.ddd,f.telefone.numero);
+            printf("Cargo.....:%s\n",f.cargo);
+            printf("Salário.....:%d\n",f.salario);
+        }
+    }
+    else
+    {
+        if (x==2)
+        {
+            posicao=localiza_cliente(aclientes,-1,nome);
+            if (posicao==-1)
+            {
+                printf(" Não existe um cliente com esse código. Impressão não realizada!\n");
+            }
+            else
+            {
+                fseek(aclientes,sizeof(c)*(posicao),SEEK_SET);
+                fread(&c, sizeof(c),1, aclientes);
+                printf("Código....:%d \n",c.codigo);
+                printf("Nome.:%s \n",c.nome);
+                printf("Telefone.....:(%d) %.0f\n",c.telefone.ddd,c.telefone.numero);
+                printf("Endereço.....:%s, %d, %s, %s, %s - %s - CEP: %s\n",c.endereco.rua,c.endereco.numero,c.endereco.complemento,c.endereco.bairro,c.endereco.cidade,c.endereco.uf,c.endereco.cep);
+            }
+        }
     }
 
 
