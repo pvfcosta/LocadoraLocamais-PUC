@@ -174,6 +174,9 @@ int main()
         case 11:
             pesquisaClienteFuncionario(afuncionarios,aclientes);
             break;
+        case 12:
+            buscalocacoescliente(aclientes,alocacao);
+            break;
 
         }
         if (op!=9)
@@ -379,7 +382,7 @@ int calcula_dias(int dia1,int mes1,int ano1,int dia2,int mes2,int ano2)
 
 // Calcula dias da data de retirada (01/01/2020 como dia 1)
 
-    for (i=2020;i<ano1;i++)
+    for (i=2020; i<ano1; i++)
     {
 
         if((i%4==0 && i%100!=0)||i%400==0)
@@ -391,7 +394,7 @@ int calcula_dias(int dia1,int mes1,int ano1,int dia2,int mes2,int ano2)
             total1+=365;
         }
     }
-    for (i=1;i<mes1;i++)
+    for (i=1; i<mes1; i++)
     {
         if((i%2!=0 && i<=7)||(i%2==0 && i>7))
         {
@@ -416,7 +419,7 @@ int calcula_dias(int dia1,int mes1,int ano1,int dia2,int mes2,int ano2)
 
 // Calculando dias da data de devolução
 
-        for(i=2020;i<ano2;i++)
+    for(i=2020; i<ano2; i++)
     {
         if((i%4==0 && i%100!=0)||i%400==0)
         {
@@ -427,7 +430,7 @@ int calcula_dias(int dia1,int mes1,int ano1,int dia2,int mes2,int ano2)
             total2+=365;
         }
     }
-    for(i=1;i<mes2;i++)
+    for(i=1; i<mes2; i++)
     {
         if((i%2!=0 && i<=7)||(i%2==0 && i>7))
         {
@@ -496,7 +499,8 @@ void inclui_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
             fflush(stdin);
             l.dias=calcula_dias(l.dataRet.dia,l.dataRet.mes,l.dataRet.ano,l.dataDev.dia,l.dataDev.mes,l.dataDev.ano);
             posicao=localiza_veiculo(aveiculos,-1,qtd);
-            if (posicao!=-1){
+            if (posicao!=-1)
+            {
                 fseek(aveiculos,sizeof(v)*posicao,SEEK_SET);
                 fread(&v,sizeof(v),1,aveiculos);
                 fflush(stdin);
@@ -687,12 +691,14 @@ void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
             printf("Valor total das diárias.:%.2f\n",valortotal);
             multa=valortotal*0.05+30*(dias1-l.dias);
             printf("Multa por dias de atraso:%.2f\n",multa);
-            if(l.seguro==1){
+            if(l.seguro==1)
+            {
                 valortotal=valortotal+multa+50.00;
                 printf("Valor do seguro.........:50.00\n");
                 printf("Valor total da locação..:%.2f\n",valortotal);
             }
-            else{
+            else
+            {
                 valortotal=valortotal+multa;
                 printf("Valor total da locação..:%.2f\n",valortotal);
             }
@@ -771,6 +777,44 @@ void pesquisaClienteFuncionario (FILE *afuncionarios,FILE *aclientes)
         }
     }
 
+
+}
+
+void buscalocacoescliente (FILE *aclientes,FILE *alocacao)
+{
+    cliente c;
+    locacao l;
+    char nome[30];
+    int posicao;
+
+    printf("Digite o nome do cliente:");
+    fflush(stdin);
+    gets(nome);
+
+    posicao=localiza_cliente(aclientes,-1,nome);
+
+    fseek(aclientes,sizeof(c)*(posicao),SEEK_SET);
+    fread(&c, sizeof(c),1, aclientes);
+
+    fseek(alocacao,0,SEEK_SET);
+    fread(&l, sizeof(l),1, alocacao);
+
+    while (!feof(alocacao))
+    {
+        if (l.cod_c==c.codigo)
+        {
+            printf("Código...........:%d \n",l.codigo);
+            printf("Data da Retirada.:%d/%d/%d \n",l.dataRet.dia,l.dataRet.mes,l.dataRet.ano);
+            printf("Data da Devolução:%d/%d/%d\n",l.dataDev.dia,l.dataDev.mes,l.dataDev.ano);
+            printf("Data da Entrega:%d/%d/%d\n",l.dataEnt.dia,l.dataEnt.mes,l.dataEnt.ano);
+            printf("Dias de Aluguel..:%d\n",l.dias);
+            printf("Seguro?..........:%d\n",l.seguro);
+            printf("Código do Cliente:%d\n",l.cod_c);
+            printf("Código do Veículo:%d\n",l.cod_v);
+
+        }
+        fread(&l, sizeof(l),1, alocacao);
+    }
 
 }
 
