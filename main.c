@@ -128,15 +128,17 @@ int main()
     do
     {
         printf("Escolha:\n");
-        printf("1- Cadastrar um cliente\n");
-        printf("2- Cadastrar um funcionário\n");
-        printf("3- Cadastrar locação\n");
-        printf("4- Cadastrar veículo\n");
-        printf("5- Premiação\n");
-        printf("6- Imprimir dados do cliente\n");
-        printf("7- Imprimir dados do funcionário\n");
-        printf("8- Imprimir dados de locação do cliente\n");
-        printf("9 - Sair do programa\n");
+        printf("1 - Cadastrar um cliente\n");
+        printf("2 - Cadastrar um funcionário\n");
+        printf("3 - Cadastrar locação\n");
+        printf("4 - Cadastrar veículo\n");
+        printf("5 - Dar baixa numa locação\n");
+        printf("6 - Pesquisar os dados de um cliente ou funcionário\n");
+        printf("7 - Mostrar todas as locações de um cliente\n");
+        printf("8 - Calcular a quantidade de pontos de um cliente\n");
+        printf("9 - Exibir clientes com 500 pontos ou mais\n");
+        printf("10 - Exclui uma locação do sistema\n");
+        printf("0 - Sair do programa\n");
         scanf("%d",&op);
         switch(op)
         {
@@ -153,45 +155,41 @@ int main()
             inclui_veiculo(aveiculos);
             break;
         case 5:
-            imprime_veiculo(aveiculos);
-            system("pause");
-            break;
-        case 6:
-            imprime_cliente(aclientes);
-            system("pause");
-            break;
-        case 7:
-            imprime_funcionario(afuncionarios);
-            system("pause");
-            break;
-        case 8:
-            imprime_locacao(alocacao);
-            system("pause");
-            break;
-        case 10:
             baixa_locacao(alocacao,aclientes,aveiculos);
             break;
-        case 11:
+        case 6:
             pesquisaClienteFuncionario(afuncionarios,aclientes);
             break;
-        case 12:
+        case 7:
             buscalocacoescliente(aclientes,alocacao);
             break;
-        case 13:
+        case 8:
             calcula_pontos(aclientes,alocacao);
             break;
-        case 14:
+        case 9:
             ganhaouKit(aclientes,alocacao);
+            break;
+        case 10:
+            excluiLocacao(alocacao);
+            break;
+        case 12:
+
+            break;
+        case 13:
+
+            break;
+        case 14:
+
             break;
 
         }
-        if (op!=9)
+        if (op!=0)
         {
             system("pause");
         }
         system("cls");
     }
-    while(op!=9);
+    while(op!=0);
     fclose(aclientes);
     fclose(afuncionarios);
     fclose(aveiculos);
@@ -453,7 +451,7 @@ int calcula_dias(int dia1,int mes1,int ano1,int dia2,int mes2,int ano2)
         {
             total2+=28;
         }
-        if(((i%2==0 && i<=7) && i!=2)||(i%2!=0 && i>7)
+        if(((i%2==0 && i<=7) && i!=2)||(i%2!=0 && i>7))
         {
             total2+=30;
         }
@@ -591,75 +589,6 @@ void inclui_veiculo(FILE *aveiculos)
         printf("Já existe um cliente com esse código. Inclusão não realizada!\n");
     }
 }
-
-void imprime_veiculo(FILE *aveiculos)
-{
-    veiculo v;
-    fseek(aveiculos,0,SEEK_SET);
-    fread(&v, sizeof(v),1, aveiculos);
-    while (!feof(aveiculos))
-    {
-        printf("Código......:%d\n",v.codigo);
-        printf("Descrição...:%s\n",v.descricao);
-        printf("Modelo......:%s\n",v.modelo);
-        printf("Cor.........:%s\n",v.cor);
-        printf("Placa.......:%s\n",v.placa);
-        printf("Ocupantes...:%d\n",v.qnt);
-        printf("Valor/diária:%f\n",v.valor);
-        printf("Status......:%d\n",v.status);
-        fread(&v, sizeof(v),1, aveiculos);
-    }
-}
-
-void imprime_cliente(FILE *aclientes)
-{
-    cliente c;
-    fseek(aclientes,0,SEEK_SET);
-    fread(&c, sizeof(c),1, aclientes);
-    while (!feof(aclientes))
-    {
-        printf("Código....:%d \n",c.codigo);
-        printf("Nome.:%s \n",c.nome);
-        printf("Telefone.....:(%d) %.0f\n",c.telefone.ddd,c.telefone.numero);
-        printf("Endereço.....:%s, %d, %s, %s, %s - %s - CEP: %s\n",c.endereco.rua,c.endereco.numero,c.endereco.complemento,c.endereco.bairro,c.endereco.cidade,c.endereco.uf,c.endereco.cep);
-        fread(&c, sizeof(c),1, aclientes);
-    }
-}
-void imprime_funcionario(FILE *afuncionarios)
-{
-    funcionario f;
-    fseek(afuncionarios,0,SEEK_SET);
-    fread(&f, sizeof(f),1, afuncionarios);
-    while (!feof(afuncionarios))
-    {
-        printf("Código....:%d \n",f.codigo);
-        printf("Nome.:%s \n",f.nome);
-        printf("Telefone.....:(%d) %.0f\n",f.telefone.ddd,f.telefone.numero);
-        printf("Cargo.....:%s\n",f.cargo);
-        printf("Salário.....:%d\n",f.salario);
-        fread(&f, sizeof(f),1, afuncionarios);
-    }
-}
-
-void imprime_locacao(FILE *alocacao)
-{
-    locacao l;
-    fseek(alocacao,0,SEEK_SET);
-    fread(&l, sizeof(l),1, alocacao);
-    while (!feof(alocacao))
-    {
-        printf("Código...........:%d \n",l.codigo);
-        printf("Data da Retirada.:%d/%d/%d \n",l.dataRet.dia,l.dataRet.mes,l.dataRet.ano);
-        printf("Data da Devolução:%d/%d/%d\n",l.dataDev.dia,l.dataDev.mes,l.dataDev.ano);
-        printf("Data da Entrega:%d/%d/%d\n",l.dataEnt.dia,l.dataEnt.mes,l.dataEnt.ano);
-        printf("Dias de Aluguel..:%d\n",l.dias);
-        printf("Seguro?..........:%d\n",l.seguro);
-        printf("Código do Cliente:%d\n",l.cod_c);
-        printf("Código do Veículo:%d\n",l.cod_v);
-        fread(&l, sizeof(l),1, alocacao);
-    }
-}
-
 void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
 {
     locacao l;
@@ -689,7 +618,7 @@ void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
             fflush(stdin);
             v.status=0;
 
-            fseek(aveiculos,sizeof(v)*posicao3,SEEK_SET);
+            fseek(aveiculos,sizeof(v)*posicao2,SEEK_SET);
             fwrite(&v, sizeof(v),1,aveiculos);
             fflush(aveiculos);
 
@@ -741,7 +670,7 @@ void pesquisaClienteFuncionario (FILE *afuncionarios,FILE *aclientes)
 {
     cliente c;
     funcionario f;
-    int x,posicao,codigo;
+    int x,posicao;
     char nome[30];
     printf("Digite 1 para imprimir dados de funcionários ou 2 para imprimir dados de clientes: ");
     scanf("%d",&x);
@@ -889,6 +818,40 @@ void ganhaouKit(FILE *aclientes,FILE *alocacao)
 
         fread(&c, sizeof(c),1, aclientes);
     }
+
+}
+
+void excluiLocacao(FILE *alocacao)
+{
+    locacao l;
+    int codigo,posicao;
+    printf("Digite o código da locacao que deseja excluir: ");
+    scanf("%d",&codigo);
+    posicao=localiza_locacao(alocacao,codigo);
+    fseek(alocacao,sizeof(l)*(posicao),SEEK_SET);
+    fread(&l, sizeof(l),1, alocacao);
+    l.codigo=0;
+    l.cod_c=0;
+    l.cod_v=0;
+    l.dataDev.ano=0;
+    l.dataDev.dia=0;
+    l.dataDev.mes=0;
+    l.dataRet.ano=0;
+    l.dataRet.dia=0;
+    l.dataRet.mes=0;
+    l.dataEnt.ano=0;
+    l.dataEnt.dia=0;
+    l.dataEnt.mes=0;
+    l.dias=0;
+    l.seguro=0;
+
+    fseek(alocacao,sizeof(l)*posicao,SEEK_SET);
+    fwrite(&l, sizeof(l),1,alocacao);
+    fflush(alocacao);
+
+    printf("Locação %d excluída\n",codigo);
+
+
 
 }
 
