@@ -306,6 +306,7 @@ void inclui_cliente(FILE *aclientes)
     posicao=localiza_cliente(aclientes,codigo,"---");
     if (posicao==-1)
     {
+        c.codigo=codigo;
         printf("Digite o nome do cliente....:");
         fflush(stdin);
         gets(c.nome);
@@ -357,6 +358,7 @@ void inclui_funcionario(FILE *afuncionarios)
     posicao=localiza_funcionario(afuncionarios,codigo,"---");
     if (posicao==-1)
     {
+        f.codigo=codigo;
         printf("Digite o nome do funcionário...:");
         fflush(stdin);
         gets(f.nome);
@@ -415,7 +417,7 @@ int calcula_dias(int dia1,int mes1,int ano1,int dia2,int mes2,int ano2)
         {
             total1+=28;
         }
-        if((i%2==0 && i<=7)||(i%2!=0 && i>7))
+        if(((i%2==0 && i<=7) && i!=2)||(i%2!=0 && i>7))
         {
             total1+=30;
         }
@@ -451,7 +453,7 @@ int calcula_dias(int dia1,int mes1,int ano1,int dia2,int mes2,int ano2)
         {
             total2+=28;
         }
-        if((i%2==0 && i<=7)||(i%2!=0 && i>7))
+        if(((i%2==0 && i<=7) && i!=2)||(i%2!=0 && i>7)
         {
             total2+=30;
         }
@@ -470,21 +472,22 @@ void inclui_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
     locacao l;
     cliente c;
     veiculo v;
-    int posicao,qtd,codigo;
+    int posicao1,posicao2,posicao3,qtd,codigo;
     char nome[30];
     printf("Digite o código da locação...:");
     scanf("%d",&codigo);
 
-    posicao=localiza_locacao(alocacao,codigo);
-    if (posicao==-1)
+    posicao1=localiza_locacao(alocacao,codigo);
+    if (posicao1==-1)
     {
+        l.codigo=codigo;
         printf("Digite o nome completo do cliente:");
         fflush(stdin);
         gets(nome);
-        posicao=localiza_cliente(aclientes,-1,nome);
-        if (posicao!=-1)
+        posicao2=localiza_cliente(aclientes,-1,nome);
+        if (posicao2!=-1)
         {
-            fseek(aclientes,sizeof(c)*posicao,SEEK_SET);
+            fseek(aclientes,sizeof(c)*posicao2,SEEK_SET);
             fread(&c,sizeof(c),1,aclientes);
             fflush(stdin);
             l.cod_c=c.codigo;
@@ -504,10 +507,10 @@ void inclui_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
             l.dataEnt.mes=0;
             fflush(stdin);
             l.dias=calcula_dias(l.dataRet.dia,l.dataRet.mes,l.dataRet.ano,l.dataDev.dia,l.dataDev.mes,l.dataDev.ano);
-            posicao=localiza_veiculo(aveiculos,-1,qtd);
-            if (posicao!=-1)
+            posicao3=localiza_veiculo(aveiculos,-1,qtd);
+            if (posicao3!=-1)
             {
-                fseek(aveiculos,sizeof(v)*posicao,SEEK_SET);
+                fseek(aveiculos,sizeof(v)*posicao3,SEEK_SET);
                 fread(&v,sizeof(v),1,aveiculos);
                 fflush(stdin);
                 l.cod_v=v.codigo;
@@ -524,11 +527,11 @@ void inclui_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
                 fflush(stdin);
                 scanf("%d",&l.seguro);
 
-                fseek(aveiculos,0,SEEK_END);
+                fseek(aveiculos,sizeof(v)*posicao3,SEEK_SET);
                 fwrite(&v, sizeof(v),1,aveiculos);
                 fflush(aveiculos);
 
-                fseek(alocacao,0,SEEK_END);
+                fseek(alocacao,sizeof(l)*posicao1,SEEK_SET);
                 fwrite(&l, sizeof(l),1,alocacao);
                 fflush(alocacao);
             }
@@ -559,6 +562,7 @@ void inclui_veiculo(FILE *aveiculos)
     posicao=localiza_veiculo(aveiculos,codigo,0);
     if (posicao==-1)
     {
+        v.codigo=codigo;
         printf("Digite o modelo do veículo...:");
         fflush(stdin);
         gets(v.modelo);
@@ -685,11 +689,11 @@ void baixa_locacao(FILE *alocacao, FILE *aclientes, FILE *aveiculos)
             fflush(stdin);
             v.status=0;
 
-            fseek(aveiculos,0,SEEK_END);
+            fseek(aveiculos,sizeof(v)*posicao3,SEEK_SET);
             fwrite(&v, sizeof(v),1,aveiculos);
             fflush(aveiculos);
 
-            fseek(alocacao,0,SEEK_END);
+            fseek(alocacao,sizeof(l)*posicao1,SEEK_SET);
             fwrite(&l, sizeof(l),1,alocacao);
             fflush(alocacao);
 
@@ -876,7 +880,8 @@ void ganhaouKit(FILE *aclientes,FILE *alocacao)
                 pontos=pontos+l.dias*10;
 
             }
-            if(pontos>=500){
+            if(pontos>=500)
+            {
                 printf("O cliente %s tem %d pontos e pode retirar um kit da LocaMais",c.nome,pontos);
             }
             fread(&l, sizeof(l),1, alocacao);
@@ -884,9 +889,6 @@ void ganhaouKit(FILE *aclientes,FILE *alocacao)
 
         fread(&c, sizeof(c),1, aclientes);
     }
-
-
-    printf("O total de pontos é:%d",pontos);
 
 }
 
