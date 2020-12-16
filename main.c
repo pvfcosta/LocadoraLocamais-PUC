@@ -177,6 +177,12 @@ int main()
         case 12:
             buscalocacoescliente(aclientes,alocacao);
             break;
+        case 13:
+            calcula_pontos(aclientes,alocacao);
+            break;
+        case 14:
+            ganhaouKit(aclientes,alocacao);
+            break;
 
         }
         if (op!=9)
@@ -812,10 +818,77 @@ void buscalocacoescliente (FILE *aclientes,FILE *alocacao)
             printf("Código do Cliente:%d\n",l.cod_c);
             printf("Código do Veículo:%d\n",l.cod_v);
 
+
         }
         fread(&l, sizeof(l),1, alocacao);
     }
 
 }
+
+void calcula_pontos (FILE *aclientes,FILE *alocacao)
+{
+    cliente c;
+    locacao l;
+    char nome[30];
+    int posicao,pontos=0;
+
+    printf("Digite o nome do cliente:");
+    fflush(stdin);
+    gets(nome);
+
+    posicao=localiza_cliente(aclientes,-1,nome);
+
+    fseek(aclientes,sizeof(c)*(posicao),SEEK_SET);
+    fread(&c, sizeof(c),1, aclientes);
+
+    fseek(alocacao,0,SEEK_SET);
+    fread(&l, sizeof(l),1, alocacao);
+
+    while (!feof(alocacao))
+    {
+        if (l.cod_c==c.codigo)
+        {
+            pontos=pontos+l.dias*10;
+
+        }
+        fread(&l, sizeof(l),1, alocacao);
+    }
+    printf("O total de pontos é:%d",pontos);
+
+}
+
+void ganhaouKit(FILE *aclientes,FILE *alocacao)
+{
+    cliente c;
+    locacao l;
+    int pontos=0;
+    fseek(aclientes,0,SEEK_SET);
+    fread(&c, sizeof(c),1, aclientes);
+
+    fseek(alocacao,0,SEEK_SET);
+    fread(&l, sizeof(l),1, alocacao);
+    while(!feof(aclientes))
+    {
+        while (!feof(alocacao))
+        {
+            if (l.cod_c==c.codigo)
+            {
+                pontos=pontos+l.dias*10;
+
+            }
+            if(pontos>=500){
+                printf("O cliente %s tem %d pontos e pode retirar um kit da LocaMais",c.nome,pontos);
+            }
+            fread(&l, sizeof(l),1, alocacao);
+        }
+
+        fread(&c, sizeof(c),1, aclientes);
+    }
+
+
+    printf("O total de pontos é:%d",pontos);
+
+}
+
 
 
